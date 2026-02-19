@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Coleção Hot Wheels</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #1e90ff, #ffffff, #ff69b4);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background-color: #1e90ff;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .card {
+            background: white;
+            width: 280px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .card h3 {
+            color: #1e90ff;
+            padding: 10px;
+        }
+
+        .card p {
+            padding: 0 10px 20px 10px;
+        }
+
+        nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #ff69b4;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: #1e90ff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🚗 Minha Coleção Hot Wheels</h1>
+        <p>Meus carrinhos favoritos em azul, branco e rosa</p>
+    </header>
+
+    <div class="container">
+
+        <div class="card">
+            <img src="imagens/azul.jpg" alt="Carrinho Azul">
+            <h3>Mustang Azul</h3>
+            <p>Modelo esportivo azul metálico.</p>
+        </div>
+
+        <div class="card">
+            <img src="imagens/branco.jpg" alt="Carrinho Branco">
+            <h3>Camaro Branco</h3>
+            <p>Design clássico com pintura branca.</p>
+        </div>
+
+        <div class="card">
+            <img src="imagens/rosa.jpg" alt="Carrinho Rosa">
+            <h3>Corvette Rosa</h3>
+            <p>Edição especial rosa exclusiva.</p>
+        </div>
+
+    </div>
+
+    <nav>
+        <a href="#">Início</a>
+        <a href="#">Coleção</a>
+        <a href="#">Sobre</a>
+        <a href="#">Contato</a>
+    </nav>
+
+</body>
+</html>
