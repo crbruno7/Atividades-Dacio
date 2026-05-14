@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinity Bank - Lista VIP</title>
+    <style>
+        /* CSS - Estilização da Ferramenta */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f0f0f;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            border: 1px solid #333;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        h1 span {
+            color: #d4af37; /* Dourado VIP */
+            font-weight: bold;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: #252525;
+            color: white;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #d4af37;
+        }
+
+        #addBtn {
+            padding: 10px 20px;
+            background-color: #d4af37;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        #addBtn:hover {
+            background-color: #f1c40f;
+            transform: scale(1.05);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: #252525;
+            margin-bottom: 12px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            border-left: 5px solid #d4af37;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .guest-name {
+            flex: 1;
+            margin-right: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: #777;
+            font-style: italic;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .actions button {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        .actions button:hover {
+            opacity: 0.8;
+        }
+
+        .done-btn { background: #2ecc71; color: white; }
+        .edit-btn { background: #f39c12; color: white; }
+        .del-btn { background: #e74c3c; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Infinity Bank <span>VIP</span></h1>
+        
+        <div class="input-group">
+            <input type="text" id="guestInput" placeholder="Nome do convidado VIP...">
+            <button id="addBtn">ADICIONAR</button>
+        </div>
+
+        <ul id="guestList">
+            <!-- Os convidados aparecerão aqui -->
+        </ul>
+    </div>
+
+    <script>
+        // JS - Lógica de Manipulação de Dados e DOM
+        const guestInput = document.getElementById('guestInput');
+        const addBtn = document.getElementById('addBtn');
+        const guestList = document.getElementById('guestList');
+
+        function createGuestElement(name) {
+            // Criar o item da lista (li)
+            const li = document.createElement('li');
+
+            // Criar o elemento de texto (span)
+            const spanName = document.createElement('span');
+            spanName.className = "guest-name";
+            spanName.textContent = name;
+
+            // Criar container de botões
+            const divActions = document.createElement('div');
+            divActions.className = "actions";
+
+            // Botão Concluir (Check-in)
+            const doneBtn = document.createElement('button');
+            doneBtn.textContent = "✓";
+            doneBtn.className = "done-btn";
+            doneBtn.title = "Marcar presença";
+            doneBtn.onclick = () => spanName.classList.toggle('completed');
+
+            // Botão Editar
+            const editBtn = document.createElement('button');
+            editBtn.textContent = "Edit";
+            editBtn.className = "edit-btn";
+            editBtn.onclick = () => {
+                const currentName = spanName.textContent;
+                const newName = prompt("Atualizar nome do convidado:", currentName);
+                if (newName !== null && newName.trim() !== "") {
+                    spanName.textContent = newName.trim();
+                }
+            };
+
+            // Botão Excluir
+            const delBtn = document.createElement('button');
+            delBtn.textContent = "X";
+            delBtn.className = "del-btn";
+            delBtn.onclick = () => {
+                if(confirm(`Remover ${spanName.textContent} da lista VIP?`)) {
+                    li.remove();
+                }
+            };
+
+            // Montar a estrutura
+            divActions.appendChild(doneBtn);
+            divActions.appendChild(editBtn);
+            divActions.appendChild(delBtn);
+            
+            li.appendChild(spanName);
+            li.appendChild(divActions);
+
+            return li;
+        }
+
+        function handleAddGuest() {
+            const name = guestInput.value.trim();
+            
+            if (name === "") {
+                alert("Por favor, insira o nome do convidado.");
+                return;
+            }
+
+            const guestElement = createGuestElement(name);
+            guestList.appendChild(guestElement);
+
+            // Limpar campo e focar novamente
+            guestInput.value = "";
+            guestInput.focus();
+        }
+
+        // Evento de clique no botão
+        addBtn.addEventListener('click', handleAddGuest);
+
+        // Suporte para a tecla Enter
+        guestInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleAddGuest();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador de Cartão de Crédito</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h2 { color: #1e293b; margin-top: 0; text-align: center; }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.9; }
+
+        #panel {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+            background: #f1f5f9;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 4px;
+        }
+
+        .info-label { font-weight: 600; color: #64748b; }
+        .info-value { color: #1e293b; font-weight: 700; }
+        
+        .status-valid { color: var(--success); }
+        .status-invalid { color: var(--danger); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Analisador de Cartão</h2>
+    <div class="input-group">
+        <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19">
+    </div>
+    <button onclick="analyzeCard()">Analisar Cartão</button>
+
+    <div id="panel">
+        <div class="info-row">
+            <span class="info-label">Status:</span>
+            <span id="resStatus" class="info-value"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Bandeira:</span>
+            <span id="resBrand" class="info-value"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Setor:</span>
+            <span id="resSector" class="info-value"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">MII (Indústria):</span>
+            <span id="resMii" class="info-value"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validateLuhn(number) {
+        let sum = 0;
+        let shouldDouble = false;
+        
+        // Loop de trás para frente
+        for (let i = number.length - 1; i >= 0; i--) {
+            let digit = parseInt(number.charAt(i));
+
+            if (shouldDouble) {
+                digit *= 2;
+                if (digit > 9) digit -= 9;
+            }
+
+            sum += digit;
+            shouldDouble = !shouldDouble;
+        }
+        return (sum % 10) === 0;
+    }
+
+    function getCardDetails(number) {
+        const mii = number[0];
+        const sectors = {
+            '1': 'Companhias Aéreas',
+            '2': 'Companhias Aéreas / Outros',
+            '3': 'Viagens e Entretenimento (American Express/Diners)',
+            '4': 'Serviços Bancários e Financeiros (Visa)',
+            '5': 'Serviços Bancários e Financeiros (Mastercard)',
+            '6': 'Merchandising e Bancário (Discover/Maestro)',
+            '7': 'Petróleo',
+            '8': 'Telecomunicações',
+            '9': 'Atribuição Nacional'
+        };
+
+        let brand = "Desconhecida";
+        if (/^4/.test(number)) brand = "Visa";
+        else if (/^5[1-5]/.test(number) || /^2[2-7]/.test(number)) brand = "Mastercard";
+        else if (/^3[47]/.test(number)) brand = "American Express";
+        else if (/^6(?:011|5)/.test(number)) brand = "Discover";
+        else if (/^3(?:0[0-5]|[68])/.test(number)) brand = "Diners Club";
+        else if (/^(?:2131|1800|35)/.test(number)) brand = "JCB";
+        else if (/^6062/.test(number)) brand = "Hipercard";
+
+        return {
+            brand: brand,
+            sector: sectors[mii] || "Desconhecido",
+            mii: mii
+        };
+    }
+
+    function analyzeCard() {
+        const rawValue = document.getElementById('cardNumber').value;
+        const cleaned = rawValue.replace(/[\s.-]/g, '');
+        const panel = document.getElementById('panel');
+        
+        if (cleaned.length < 13 || cleaned.length > 16 || isNaN(cleaned)) {
+            alert("Por favor, insira um número entre 13 e 16 dígitos.");
+            return;
+        }
+
+        const isValid = validateLuhn(cleaned);
+        const details = getCardDetails(cleaned);
+
+        // Preencher Painel
+        const resStatus = document.getElementById('resStatus');
+        resStatus.innerText = isValid ? "VÁLIDO" : "INVÁLIDO (Luhn Falhou)";
+        resStatus.className = "info-value " + (isValid ? "status-valid" : "status-invalid");
+
+        document.getElementById('resBrand').innerText = details.brand;
+        document.getElementById('resSector').innerText = details.sector;
+        document.getElementById('resMii').innerText = details.mii;
+
+        panel.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

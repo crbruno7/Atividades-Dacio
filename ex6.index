@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Eventos Pro</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h2 { text-align: center; color: var(--primary); }
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+
+        select, input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover { background-color: #4338ca; }
+
+        #resultado {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px dashed #e2e8f0;
+            display: none;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .total-final {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 1rem;
+            padding-top: 0.5rem;
+        }
+
+        .desconto { color: #16a34a; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Orçamento de Evento</h2>
+    
+    <div class="form-group">
+        <label for="pacote">Selecione o Pacote:</label>
+        <select id="pacote">
+            <option value="0">Escolha uma opção...</option>
+            <option value="80">Básico (R$ 80,00 /pessoa)</option>
+            <option value="150">Premium (R$ 150,00 /pessoa)</option>
+            <option value="250">Luxo (R$ 250,00 /pessoa)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="quantidade">Quantidade de Pessoas:</label>
+        <input type="number" id="quantidade" min="1" placeholder="Ex: 50">
+    </div>
+
+    <button onclick="calcularOrcamento()">Calcular Orçamento</button>
+
+    <div id="resultado">
+        <div class="result-item">
+            <span>Custo Bruto:</span>
+            <span id="res-bruto">R$ 0,00</span>
+        </div>
+        <div class="result-item">
+            <span>Taxa de Serviço (10%):</span>
+            <span id="res-taxa">R$ 0,00</span>
+        </div>
+        <div class="result-item desconto">
+            <span>Desconto (Grupos > 50):</span>
+            <span id="res-desconto">R$ 0,00</span>
+        </div>
+        <div class="result-item total-final">
+            <span>Total Final:</span>
+            <span id="res-total">R$ 0,00</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calcularOrcamento() {
+        // Obtenção dos valores
+        const precoPorPessoa = parseFloat(document.getElementById('pacote').value);
+        const qtdPessoas = parseInt(document.getElementById('quantidade').value);
+        const displayResultado = document.getElementById('resultado');
+
+        // Validação simples
+        if (precoPorPessoa === 0 || isNaN(qtdPessoas) || qtdPessoas <= 0) {
+            alert("Por favor, preencha todos os campos corretamente.");
+            return;
+        }
+
+        // Lógica de Cálculo
+        let custoBruto = precoPorPessoa * qtdPessoas;
+        let taxaServico = custoBruto * 0.10; // 10% de taxa
+        
+        // Regra de Desconto: 5% para eventos com mais de 50 pessoas
+        let desconto = 0;
+        if (qtdPessoas > 50) {
+            desconto = (custoBruto + taxaServico) * 0.05;
+        }
+
+        let totalFinal = (custoBruto + taxaServico) - desconto;
+
+        // Atualização da Interface
+        document.getElementById('res-bruto').innerText = `R$ ${custoBruto.toFixed(2)}`;
+        document.getElementById('res-taxa').innerText = `R$ ${taxaServico.toFixed(2)}`;
+        document.getElementById('res-desconto').innerText = `- R$ ${desconto.toFixed(2)}`;
+        document.getElementById('res-total').innerText = `R$ ${totalFinal.toFixed(2)}`;
+
+        // Mostrar a div de resultado com animação simples
+        displayResultado.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

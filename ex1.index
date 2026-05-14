@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador de CPF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 300px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #resultado {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .sucesso { color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; display: block !important; }
+        .erro { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; display: block !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Validador de CPF</h2>
+    <input type="text" id="cpfInput" placeholder="000.000.000-00" maxlength="14">
+    <button onclick="validar()">Validar</button>
+    <div id="resultado"></div>
+</div>
+
+<script>
+    function validar() {
+        const input = document.getElementById('cpfInput').value;
+        const resultadoDiv = document.getElementById('resultado');
+        
+        // Remove caracteres não numéricos
+        const cpf = input.replace(/\D/g, '');
+
+        if (validarCPF(cpf)) {
+            resultadoDiv.innerText = "CPF Válido!";
+            resultadoDiv.className = "sucesso";
+        } else {
+            resultadoDiv.innerText = "CPF Inválido!";
+            resultadoDiv.className = "erro";
+        }
+    }
+
+    function validarCPF(cpf) {
+        if (cpf.length !== 11 || !!cpf.match(/(\d)\1{10}/)) return false;
+
+        const cpfs = cpf.split('').map(el => +el);
+        
+        const rest = (count) => {
+            return (((cpfs.slice(0, count - 12).reduce((soma, el, index) => (soma + el * (count - index)), 0) * 10) % 11) % 10);
+        };
+
+        return rest(10) === cpfs[9] && rest(11) === cpfs[10];
+    }
+
+    // Máscara simples para o input
+    document.getElementById('cpfInput').addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 3) value = value.substring(0,3) + '.' + value.substring(3);
+        if (value.length > 7) value = value.substring(0,7) + '.' + value.substring(7);
+        if (value.length > 11) value = value.substring(0,11) + '-' + value.substring(11);
+        e.target.value = value;
+    });
+</script>
+
+</body>
+</html>
